@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
           FlatButton(
             child: Text(
               'Cart (${currentUser.cart.length})',
-              style: TextStyle(color: Colors.white, fontSize: 20.0),
+              style: TextStyle(color: Colors.white, fontSize: 18.0),
             ),
             onPressed: () {},
           )
