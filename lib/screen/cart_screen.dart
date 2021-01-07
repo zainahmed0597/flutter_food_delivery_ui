@@ -19,6 +19,8 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 Container(
                   height: 150.0,
+                  width: MediaQuery.of(context).size.width *
+                      0.35, // not working if it not there
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(order.food.imageUrl),
@@ -58,29 +60,39 @@ class _CartScreenState extends State<CartScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                '-',
-                                style: TextStyle(
+                              GestureDetector(
+                                onTap: () {},
+                                child: Text(
+                                  '-',
+                                  style: TextStyle(
                                     color: Theme.of(context).primaryColor,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.0,
+                              ),
+                              Text(
+                                order.quantity.toString(),
+                                style: TextStyle(
+                                    color: Colors.black54,
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.w600),
                               ),
                               SizedBox(
                                 width: 20.0,
                               ),
-                              Text(order.quantity.toString(),style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w600),),
-                              SizedBox(
-                                width: 20.0,
-                              ),
-                              Text(
-                                '+',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w600),
+                              GestureDetector(
+                                onTap: () {},
+                                child: Text(
+                                  '+',
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ),
                             ],
                           ),
@@ -92,6 +104,13 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
           ),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            child: Text(
+              '\$${order.quantity * order.food.price}',
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+            ),
+          ),
         ],
       ),
     );
@@ -99,22 +118,90 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double totalPrice = 0;
+    currentUser.cart.forEach(
+        (Order order) => totalPrice += order.quantity * order.food.price);
     return Scaffold(
       appBar: AppBar(
         title: Text('Cart (${currentUser.cart.length})'),
       ),
       body: ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
+        itemCount: currentUser.cart.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index < currentUser.cart.length) {
             Order order = currentUser.cart[index];
             return _buildCartItem(order);
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(
-              height: 1.0,
-              color: Colors.grey,
-            );
-          },
-          itemCount: currentUser.cart.length),
+          }
+          return Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Estimated Deliver Time',
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      '25 min',
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Cost:',
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      '\$${totalPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                          color: Colors.green[700],
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),SizedBox(height: 80.0,),
+              ],
+            ),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(
+            height: 1.0,
+            color: Colors.grey,
+          );
+        },
+      ),
+      bottomSheet: Container(
+        height: 100.0,
+        width: MediaQuery.of(context).size.width,
+        decoration:
+            BoxDecoration(color: Theme.of(context).primaryColor, boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            offset: Offset(0, -1),
+            blurRadius: 6.0,
+          )
+        ]),
+        child: Center(
+          child: FlatButton(
+            child: Text(
+              'CHECKOUT',
+              style: TextStyle(color: Colors.white,fontSize: 22.0,fontWeight: FontWeight.bold,letterSpacing: 2.0,),
+            ),onPressed: (){},
+          ),
+        ),
+      ),
     );
   }
 }
